@@ -25,6 +25,11 @@ keep a track of the quantity of numberplates generated.
 
 Be able to count how many numberplates are generated from a specific city
 
+
+<img width="491" alt="Screenshot 2024-09-13 at 19 37 25" src="https://github.com/user-attachments/assets/3a642537-0c28-429e-ba8f-bdae301b82fe">
+
+
+
 The Vin number is tied to a unique vehicle reg.
 
 No 2 vehicles are allowed to have the same registration
