@@ -1,0 +1,16 @@
+{
+  "name": "dvla-coding-task",
+  "version": "1.0.0",
+  "description": "My solution to the DVLA coding task:",
+  "main": "main.js",
+  "type" : "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "csv-parser": "^3.0.0"
+  }
+}
