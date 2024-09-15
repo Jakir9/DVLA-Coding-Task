@@ -124,8 +124,11 @@ function generateVehicleRegistration(vehicles) {
   //console.log a random reg
 
   for (let i = 0; i < 100; i++) {
-    console.log(
+    let randomReg =
       vehicles[Math.floor(Math.random() * vehicles.length)].registration
-    )
+
+    if (randomReg !== undefined) {
+      console.log(randomReg + ' : ' + getRegistrationArea(randomReg))
+    }
   }
 }

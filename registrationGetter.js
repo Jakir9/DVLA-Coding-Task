@@ -1,3 +1,5 @@
+import { isValidAreaCode } from './registrationValidator.js'
+
 let successfulRegistrations = 0
 let failedRegistrations = 0
 let areaRegistrations = {
