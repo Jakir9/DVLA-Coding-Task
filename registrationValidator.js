@@ -1,80 +1,63 @@
-import { parse, isValid } from 'date-fns'
-
 const expectedHeaders = [
   'make',
   'colour',
   'dateOfManufacture',
   'vin',
   'registrationArea',
-] // Expected headers from csv file
+]
 
+// Validate CSV headers
 function validateHeaders(headers) {
-  //compares csv headers with expected headers
   return JSON.stringify(headers) === JSON.stringify(expectedHeaders)
 }
 
+// Validate registration format
 function isValidFormat(registrationNumber) {
-  //only checks format not area code
-  //method to check if reg format is valid
-
-  if (typeof registrationNumber !== 'string') {
-    //check if registrationNumber is a string
+  if (
+    typeof registrationNumber !== 'string' ||
+    registrationNumber.length !== 9
+  ) {
     return false
   }
-
-  if (registrationNumber.length !== 9) {
-    return false
-  }
-
-  const registrationPattern = /^[A-Z]{2}\s\d{2}\s[A-HJLNOPQRSTUVWXZ]{3}$/ //regex pattern for valid vehicle reg format
-  //how to prevent 00 year appearing, when generating year
-
-  return registrationPattern.test(registrationNumber) //test if reg has correct format
+  const registrationPattern = /^[A-Z]{2}\s\d{2}\s[A-HJLNOPQRSTUVWXZ]{3}$/
+  return registrationPattern.test(registrationNumber)
 }
 
-//Tests for isValidFormat function:
-console.log('CA 12 ABC: ' + isValidFormat('CA 12 ABC')) //returns true
-console.log('CA 12 ABI: ' + isValidFormat('CA 12 ABI')) //returns false
-console.log('BA 20 ABC: ' + isValidFormat('BA 20 ABC')) //returns true
-
-//00 a valid registration year ?
-//Reg plates state from 2000 September (51 plate) to 2049 september (99 plate)
-
-function isValidAreaCode(registration) {
-  //check if area code is valid for Swansea, Cardiff, Birmingham
-  let areaCode = registration.substring(0, 2)
+// Validate area code format
+function isValidAreaCode(areaCode) {
   const areaCodePattern = /^(C[A-K]|C[L-Z]|B[ABC])/
-
-  return areaCodePattern.test(areaCode) //returns true or false if valid area
+  return areaCodePattern.test(areaCode)
 }
 
-//Tests for isValidAreaCode Function:
-console.log('XY 92 ABC: ' + isValidAreaCode('XY 92 ABC')) //returns false
-console.log('CA 22 ABC: ' + isValidAreaCode('CA 22 ABC')) //returns true
-console.log('BA 18 ABC: ' + isValidAreaCode('BA 18 ABC')) //returns true
-
-function isRegistrationValid(registration) {
-  return isValidFormat(registration) && isValidAreaCode(registration)
+// Validate area
+function isAreaValid(area) {
+  const validAreas = ['cardiff', 'swansea', 'birmingham']
+  return validAreas.includes(area.toLowerCase())
 }
-//Tests for isRegistrationValid function:
-console.log('CA 12 ABC: ' + isRegistrationValid('CA 12 ABC')) //returns true
-console.log('CA 12 ABY: ' + isRegistrationValid('CA 12 ABY')) //returns false
 
-function isDateValid(date) {
-  const parsedDated = parse(date, 'dd/MM/yyyy', new Date())
+// Validate date format
+function isDateValid(dateString) {
+  const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/
+  const match = dateString.match(regex)
+  if (!match) return false
 
-  return isValid(parsedDated) + ' ' + parsedDated
+  const day = parseInt(match[1], 10)
+  const month = parseInt(match[2], 10)
+  const year = parseInt(match[3], 10)
+
+  // Check for valid day and month ranges
+  if (month < 1 || month > 12) return false
+  if (day < 1 || day > 31) return false
+
+  // Additional checks for specific months and leap years could be added here
+  return true
 }
-//Tests for isDateValid:
-console.log('15/09/2024: ' + isDateValid('15/09/2024')) // true
-console.log('31/02/2024: ' + isDateValid('31/02/2024')) // false
-console.log('15/13/2024: ' + isDateValid('15/13/2024')) // false
 
 export {
   validateHeaders,
   isValidFormat,
   isValidAreaCode,
-  isRegistrationValid,
+  isAreaValid,
   isDateValid,
   expectedHeaders,
 }

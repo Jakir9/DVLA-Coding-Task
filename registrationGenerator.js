@@ -1,10 +1,9 @@
 import fs from 'fs'
-import { parse } from 'date-fns'
 import csv from 'csv-parser'
 import {
-  isValidAreaCode,
-  isDateValid,
   validateHeaders,
+  isDateValid,
+  isAreaValid,
 } from './registrationValidator.js'
 import {
   getAllAreaRegistrations,
@@ -15,54 +14,73 @@ import {
   getRegistrationArea,
 } from './RegistrationGetter.js'
 
-let path = './vehicles.csv' //path to csv file
-
-const vehicles = [] //list of vehicles
+const path = './vehicles.csv' // Path to CSV file
+const vehicles = [] // List of vehicles
 
 fs.createReadStream(path)
-  .pipe(csv()) //csv is a function from the csv parser module
+  .pipe(csv())
   .on('headers', (headers) => {
-    // Validate the headers when they are read
     if (!validateHeaders(headers)) {
-      console.log(
+      console.error(
         'Invalid CSV headers! Expected:',
-        expectedHeaders + ' Please reupload correct file'
+        expectedHeaders,
+        'Please reupload correct file'
       )
-      destroy() // Stop further processing if headers are invalid
+      this.destroy() // Stop further processing if headers are invalid
     }
   })
   .on('data', (row) => {
-    vehicles.push(row) //each row is pushed to vehicles array as it is read
+    vehicles.push(row) // Push each row to vehicles array
   })
   .on('error', function (error) {
-    console.log('error has occurred whilst parsing: ', error) //catch errors
+    console.error('Error occurred whilst parsing:', error) // Catch errors
   })
   .on('end', function () {
     console.log('CSV successfully parsed')
-    generateVehicleRegistration(vehicles) //generate vehicle registration
+    generateVehicleRegistration(vehicles) // Generate vehicle registration
   })
-//where do i store the vehicle reg? -> sql server?
+
+function generateAreaCode(city) {
+  const cityNormalized = city.toLowerCase()
+  switch (cityNormalized) {
+    case 'swansea':
+      return generateRandomLetter('C', 'A', 'K')
+    case 'cardiff':
+      return generateRandomLetter('C', 'L', 'Z')
+    case 'birmingham':
+      return generateRandomLetter('B', 'A', 'C')
+    default:
+      return 'city not added yet'
+  }
+}
+
+function generateRandomLetter(firstLetter, startLetter, endLetter) {
+  const startCharCode = startLetter.charCodeAt(0)
+  const endCharCode = endLetter.charCodeAt(0)
+  const secondLetterCharCode =
+    Math.floor(Math.random() * (endCharCode - startCharCode + 1)) +
+    startCharCode
+  return firstLetter + String.fromCharCode(secondLetterCharCode)
+}
 
 function generateYearFromDateOfManufacture(dateOfManufacture) {
-  // DD/MM/YYYY
-  // Get month and compare it, if >= 9(september) then + 50
-  // Parse the date in DD/MM/YYYY format
+  // dd/mm/yyyy
+  // Extract the year from the date
+  const year = dateOfManufacture.substring(6, 10)
 
-  const parsedDate = parse(dateOfManufacture, 'dd/MM/yyyy', new Date())
+  // Convert the year to a number
+  const yearNumber = parseInt(year)
 
-  // Extract the month and year
-  const month = getMonth(parsedDate) + 1 // Months start from 0, hence + 1
-  const year = getYear(parsedDate)
-
-  // Adjust the year if the month is September or later
-  const adjustedYear = month >= 9 ? year + 50 : year
-
-  return adjustedYear.toString()
+  // Determine the age identifier based on the month
+  const month = dateOfManufacture.substring(3, 5)
+  if (month >= '03' && month <= '08') {
+    return yearNumber % 100
+  } else {
+    return (yearNumber % 100) + 50
+  }
 }
 
 function generateRandomCharacters() {
-  //generate 3 random characters for reg
-
   let randomChars = ''
   const validLetters = 'ABCDEFGHJLNOPQRSTUVWXZ'
   for (let i = 0; i < 3; i++) {
@@ -73,53 +91,41 @@ function generateRandomCharacters() {
   return randomChars
 }
 
-//takes in array of objects containing vehicle data
-
-//for loop that iterates in the array. uses the dateOfManufacture to generate the year of the reg
-// and the registrationArea to generate the area code of the reg
-// and then generates 3 random chars using generateRandomCharacter()
-// to generate the reg and adds this into the object
-//then moves to the next objects in the array does repeats this
 function generateVehicleRegistration(vehicles) {
   for (let i = 0; i < vehicles.length; i++) {
     let vehicle = vehicles[i]
-    console.log('Processing vehicle:', vehicle)
 
-    if (
-      isDateValid(vehicle.dateOfManufacture) &&
-      isValidAreaCode(vehicle.registrationArea)
-    ) {
-      let areaCode = vehicle.registrationArea
-      let year = generateYearFromDateOfManufacture(vehicle.dateOfManufacture)
-      let randomChars = generateRandomCharacters()
+    const area = vehicle.registrationArea //getting the area
+    const year = generateYearFromDateOfManufacture(vehicle.dateOfManufacture)
+    const randomChars = generateRandomCharacters()
 
-      let registration = `${areaCode} ${year} ${randomChars}`
+    if (isAreaValid(area)) {
+      //generate area code
+      const areaCode = generateAreaCode(area)
+      const registration = `${areaCode} ${year} ${randomChars}`
       vehicle.registration = registration
-
-      let registrationArea = getRegistrationArea(registration)
-      console.log('Generated registration:', registration)
-      console.log('Registration area:', registrationArea)
-
-      if (registrationArea === 'Invalid area code') {
-        addFailedRegistrations()
-        console.log('Failed registration due to invalid area code. \n')
-      } else {
-        addRegistration(registrationArea)
-      }
+      addRegistration(vehicle.registrationArea)
     } else {
+      //console.error(
+      //  `Failed registration due to area code: ${JSON.stringify(vehicle)}`
+      // )
       addFailedRegistrations()
-      console.log('Failed registration due to invalid date or area code.')
     }
   }
 
   // Log the results
   console.log(
-    'TOTAL NUMBER OF VEHICLES REGISTERED: ',
+    'TOTAL NUMBER OF VEHICLES REGISTERED:',
     getSuccessfulRegistrations()
   )
-  console.log('REGISTRATION FROM EACH AREA: ', getAllAreaRegistrations())
-  console.log('FAILED REGISTRATIONS: ', getFailedRegistrations())
-  console.log('VEHICLE DATA: ', vehicles)
+  console.log('REGISTRATIONS FROM EACH AREA:', getAllAreaRegistrations())
+  console.log('FAILED REGISTRATIONS:', getFailedRegistrations())
 
-  return vehicles
+  //console.log a random reg
+
+  for (let i = 0; i < 100; i++) {
+    console.log(
+      vehicles[Math.floor(Math.random() * vehicles.length)].registration
+    )
+  }
 }
