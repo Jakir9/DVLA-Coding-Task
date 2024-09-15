@@ -1,4 +1,4 @@
-import { parse, isValid, getMonth, getYear } from 'date-fns'
+import { parse, isValid } from 'date-fns'
 
 const expectedHeaders = [
   'make',
@@ -63,7 +63,7 @@ console.log('CA 12 ABY: ' + isRegistrationValid('CA 12 ABY')) //returns false
 function isDateValid(date) {
   const parsedDated = parse(date, 'dd/MM/yyyy', new Date())
 
-  return isValid(parsedDated)
+  return isValid(parsedDated) + ' ' + parsedDated
 }
 //Tests for isDateValid:
 console.log('15/09/2024: ' + isDateValid('15/09/2024')) // true
@@ -76,4 +76,5 @@ export {
   isValidAreaCode,
   isRegistrationValid,
   isDateValid,
+  expectedHeaders,
 }

@@ -1,8 +1,19 @@
 import fs from 'fs'
-import { parse, isValid, getMonth, getYear } from 'date-fns'
+import { parse } from 'date-fns'
 import csv from 'csv-parser'
-import { isValidAreaCode, isDateValid } from './registrationValidator.js'
-import { validateHeaders } from './registrationValidator.js'
+import {
+  isValidAreaCode,
+  isDateValid,
+  validateHeaders,
+} from './registrationValidator.js'
+import {
+  getAllAreaRegistrations,
+  getFailedRegistrations,
+  getSuccessfulRegistrations,
+  addFailedRegistrations,
+  addRegistration,
+  getRegistrationArea,
+} from './RegistrationGetter.js'
 
 let path = './vehicles.csv' //path to csv file
 
@@ -17,7 +28,7 @@ fs.createReadStream(path)
         'Invalid CSV headers! Expected:',
         expectedHeaders + ' Please reupload correct file'
       )
-      this.destroy() // Stop further processing if headers are invalid
+      destroy() // Stop further processing if headers are invalid
     }
   })
   .on('data', (row) => {
@@ -29,7 +40,6 @@ fs.createReadStream(path)
   .on('end', function () {
     console.log('CSV successfully parsed')
     generateVehicleRegistration(vehicles) //generate vehicle registration
-    console.log(vehicles) //log vehicles array when parsing is complete
   })
 //where do i store the vehicle reg? -> sql server?
 
@@ -63,30 +73,53 @@ function generateRandomCharacters() {
   return randomChars
 }
 
+//takes in array of objects containing vehicle data
+
+//for loop that iterates in the array. uses the dateOfManufacture to generate the year of the reg
+// and the registrationArea to generate the area code of the reg
+// and then generates 3 random chars using generateRandomCharacter()
+// to generate the reg and adds this into the object
+//then moves to the next objects in the array does repeats this
 function generateVehicleRegistration(vehicles) {
-  //takes in array of objects containing vehicle data
-
-  //for loop that iterates in the array. uses the dateOfManufacture to generate the year of the reg
-  // and the registrationArea to generate the area code of the reg
-  // and then generates 3 random chars using generateRandomCharacter()
-  // to generate the reg and adds this into the object
-  //then moves to the next objects in the array does repeats this
-
   for (let i = 0; i < vehicles.length; i++) {
     let vehicle = vehicles[i]
-    if (isDateValid(vehicle.dateOfManufacture)) {
-      let registration = ''
-      let areaCode = vehicles[i].registrationArea
-      let year = generateYearFromDateOfManufacture(
-        vehicles[i].dateOfManufacture
-      )
+    console.log('Processing vehicle:', vehicle)
+
+    if (
+      isDateValid(vehicle.dateOfManufacture) &&
+      isValidAreaCode(vehicle.registrationArea)
+    ) {
+      let areaCode = vehicle.registrationArea
+      let year = generateYearFromDateOfManufacture(vehicle.dateOfManufacture)
       let randomChars = generateRandomCharacters()
 
-      registration = areaCode + ' ' + year + ' ' + randomChars
+      let registration = `${areaCode} ${year} ${randomChars}`
+      vehicle.registration = registration
 
-      vehicles[i].registration = registration
+      let registrationArea = getRegistrationArea(registration)
+      console.log('Generated registration:', registration)
+      console.log('Registration area:', registrationArea)
+
+      if (registrationArea === 'Invalid area code') {
+        addFailedRegistrations()
+        console.log('Failed registration due to invalid area code. \n')
+      } else {
+        addRegistration(registrationArea)
+      }
+    } else {
+      addFailedRegistrations()
+      console.log('Failed registration due to invalid date or area code.')
     }
   }
+
+  // Log the results
+  console.log(
+    'TOTAL NUMBER OF VEHICLES REGISTERED: ',
+    getSuccessfulRegistrations()
+  )
+  console.log('REGISTRATION FROM EACH AREA: ', getAllAreaRegistrations())
+  console.log('FAILED REGISTRATIONS: ', getFailedRegistrations())
+  console.log('VEHICLE DATA: ', vehicles)
 
   return vehicles
 }

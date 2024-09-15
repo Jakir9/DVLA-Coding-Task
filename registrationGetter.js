@@ -1,3 +1,5 @@
+import { isValidAreaCode } from './registrationValidator.js'
+
 let successfulRegistrations = 0
 let failedRegistrations = 0
 let areaRegistrations = [{ Birmingham: 0 }, { Cardiff: 0 }, { Swansea: 0 }] //need to push objects to this with the area and increment the total.
@@ -26,22 +28,28 @@ function getFailedRegistrations() {
 }
 
 function addRegistration(area) {
-  if (areaRegistrations.hasOwnProperty(area)) {
-    //checks if area exists in the array
-    areaRegistrations[area]++
+  // Find the area object in the array
+  const areaObj = areaRegistrations.find((obj) => obj.hasOwnProperty(area))
+
+  if (areaObj) {
+    areaObj[area]++ // Increment the count for the found area
     successfulRegistrations++
   } else {
+    // If the area is not found, increment failed registrations
     failedRegistrations++
   }
 }
 
-function removeRegistrations(area) {
-  if (areaRegistrations.hasOwnProperty(area)) {
-    areaRegistrations[area]--
-    successfulRegistrations--
-  }
-}
+// function removeRegistrations(area) {
+//   if (areaRegistrations.hasOwnProperty(area)) {
+//     areaRegistrations[area]--
+//     successfulRegistrations--
+//   }
+// }
 
+function addFailedRegistrations() {
+  failedRegistrations++
+}
 function totalRegistrationCount() {
   return successfulRegistrations + failedRegistrations
 }
@@ -92,8 +100,9 @@ export {
   getFailedRegistrations,
   getSuccessfulRegistrations,
   addRegistration,
-  removeRegistrations,
+  //removeRegistrations,
   totalRegistrationCount,
   getYearFromReg,
   getRegistrationArea,
+  addFailedRegistrations,
 }
