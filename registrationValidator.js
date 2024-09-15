@@ -25,13 +25,13 @@ function isValidFormat(registrationNumber) {
 
 // Validate area code format
 function isValidAreaCode(areaCode) {
-  const areaCodePattern = /^(C[A-K]|C[L-Z]|B[ABC])/
+  const areaCodePattern = /^(C[A-K]|C[L-Z]|B[ABC])/ //Addition areas can be added here in the future
   return areaCodePattern.test(areaCode)
 }
 
 // Validate area
 function isAreaValid(area) {
-  const validAreas = ['cardiff', 'swansea', 'birmingham']
+  const validAreas = ['cardiff', 'swansea', 'birmingham'] //add more cities in the future here
   return validAreas.includes(area.toLowerCase())
 }
 

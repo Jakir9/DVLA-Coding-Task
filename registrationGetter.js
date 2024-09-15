@@ -54,6 +54,7 @@ function getRegistrationArea(registration) {
     if (area.match(/^C[A-K]/)) return 'Swansea'
     if (area.match(/^C[L-Z]/)) return 'Cardiff'
     if (area.match(/^B[ABC]/)) return 'Birmingham'
+    // More if statements if you are adding more cities in the future
   }
   return 'Invalid area code'
 }

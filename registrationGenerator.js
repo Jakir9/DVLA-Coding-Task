@@ -1,10 +1,6 @@
 import fs from 'fs'
 import csv from 'csv-parser'
-import {
-  validateHeaders,
-  isDateValid,
-  isAreaValid,
-} from './registrationValidator.js'
+import { validateHeaders, isAreaValid } from './registrationValidator.js'
 import {
   getAllAreaRegistrations,
   getFailedRegistrations,
@@ -12,6 +8,7 @@ import {
   addFailedRegistrations,
   addRegistration,
   getRegistrationArea,
+  getYearFromReg,
 } from './RegistrationGetter.js'
 
 const path = './vehicles.csv' // Path to CSV file
@@ -128,7 +125,13 @@ function generateVehicleRegistration(vehicles) {
       vehicles[Math.floor(Math.random() * vehicles.length)].registration
 
     if (randomReg !== undefined) {
-      console.log(randomReg + ' : ' + getRegistrationArea(randomReg))
+      console.log(
+        randomReg +
+          ' : ' +
+          getRegistrationArea(randomReg) +
+          ' : ' +
+          getYearFromReg(randomReg)
+      )
     }
   }
 }
