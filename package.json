@@ -6,14 +6,18 @@
   "type": "module",
   "scripts": {
     "test": "jest",
-  
     "start": "node registrationGenerator.js"
-    
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "csv-parser": "^3.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "^7.25.4",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0"
   }
 }
