@@ -1,6 +1,6 @@
 import fs from 'fs'
 import csv from 'csv-parser'
-import { validateHeaders, isAreaValid } from './registrationValidator.js'
+import { validateHeaders, isAreaValid, isCSV } from './registrationValidator.js'
 import {
   getAllAreaRegistrations,
   getFailedRegistrations,
@@ -14,28 +14,36 @@ import {
 const path = './vehicles.csv' // Path to CSV file
 const vehicles = [] // List of vehicles
 
-fs.createReadStream(path) // Reads the csv file - not async but it is non-blocking and reads the file in chunks
-  .pipe(csv())
-  .on('headers', (headers) => {
-    if (!validateHeaders(headers)) {
-      console.error(
-        'Invalid CSV headers! Expected:',
-        expectedHeaders,
-        'Please reupload correct file'
-      )
-      this.destroy() // Stop further processing if headers are invalid
-    }
-  })
-  .on('data', (row) => {
-    vehicles.push(row) // Push each row to vehicles array
-  })
-  .on('error', function (error) {
-    console.error('Error occurred whilst parsing:', error) // Catch errors
-  })
-  .on('end', function () {
-    console.log('CSV successfully parsed')
-    generateVehicleRegistration(vehicles) // Generate vehicle registration
-  })
+// Validate if the file is a CSV
+if (!isCSV(path)) {
+  console.error('Invalid file type! Only .csv files are allowed.')
+  process.exit(1) // Exit the program if the file isn't a CSV
+} else {
+  // Process the CSV file if it's valid
+  fs.createReadStream(path) // Reads the csv file - not async but it is non-blocking and reads the file in chunks
+    .pipe(csv())
+    .on('headers', (headers) => {
+      if (!validateHeaders(headers)) {
+        console
+          .error(
+            'Invalid CSV headers! Expected:',
+            expectedHeaders,
+            'Please reupload correct file'
+          )
+          .destroy() // Stop further processing if headers are invalid
+      }
+    })
+    .on('data', (row) => {
+      vehicles.push(row) // Push each row to vehicles array
+    })
+    .on('error', function (error) {
+      console.error('Error occurred whilst parsing:', error) // Catch errors
+    })
+    .on('end', function () {
+      console.log('CSV successfully parsed')
+      generateVehicleRegistration(vehicles) // Generate vehicle registration
+    })
+}
 
 function generateAreaCode(city) {
   const cityNormalized = city.toLowerCase()

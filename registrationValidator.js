@@ -57,6 +57,16 @@ function isDateValid(dateString) {
   return true
 }
 
+function isCSV(file) {
+  //validates if file is a csv file
+  return file.toLowerCase().endsWith('.csv')
+}
+
+//tests for isCSV method
+console.log('vehicles.csv: ' + isCSV('vehicles.csv')) // true
+console.log('vehicles.txt: ' + isCSV('vehicles.txt')) // false
+console.log('data.CSV: ' + isCSV('data.CSV')) // true (case insensitive)
+
 export {
   validateHeaders,
   isValidFormat,
@@ -64,4 +74,5 @@ export {
   isAreaValid,
   isDateValid,
   expectedHeaders,
+  isCSV,
 }
