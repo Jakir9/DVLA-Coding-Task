@@ -65,8 +65,8 @@ Invalid: [ ABI, YDF, … ]
 # How to run
 
 - Clone the repository
-- type 'Npm install' into terminal
-- type 'Npm start' or 'node registration.js' into terminal
+- type `Npm install` into terminal
+- type `Npm start` or 'node registration.js' into terminal
 - registration numbers will be generated from vehicles.csv file, 100 random registrations will be shown and the total number of vehicles generated and the number of vehicles from each city.
 
-- npm test will run the test suite
+- `npm test` will run the test suite
