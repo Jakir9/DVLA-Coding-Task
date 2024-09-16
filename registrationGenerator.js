@@ -14,7 +14,7 @@ import {
 const path = './vehicles.csv' // Path to CSV file
 const vehicles = [] // List of vehicles
 
-fs.createReadStream(path)
+fs.createReadStream(path) // Reads the csv file - not async but it is non-blocking and reads the file in chunks
   .pipe(csv())
   .on('headers', (headers) => {
     if (!validateHeaders(headers)) {
@@ -71,13 +71,16 @@ function generateYearFromDateOfManufacture(dateOfManufacture) {
   // Determine the age identifier based on the month
   const month = dateOfManufacture.substring(3, 5)
   if (month >= '03' && month <= '08') {
-    return yearNumber % 100
+    //if between march and august
+    return yearNumber % 100 // returns the remainder
   } else {
+    //between september and december so return year + 50
     return (yearNumber % 100) + 50
   }
 }
 
 function generateRandomCharacters() {
+  //Generates the 3 random letters at end of car reg
   let randomChars = ''
   const validLetters = 'ABCDEFGHJLNOPQRSTUVWXZ'
   for (let i = 0; i < 3; i++) {
@@ -89,18 +92,20 @@ function generateRandomCharacters() {
 }
 
 function generateVehicleRegistration(vehicles) {
+  //input is the vehicles array
   for (let i = 0; i < vehicles.length; i++) {
+    //loop through the vehicles array
     let vehicle = vehicles[i]
 
-    const area = vehicle.registrationArea //getting the area
-    const year = generateYearFromDateOfManufacture(vehicle.dateOfManufacture)
-    const randomChars = generateRandomCharacters()
+    const area = vehicle.registrationArea //get registration area
+    const year = generateYearFromDateOfManufacture(vehicle.dateOfManufacture) //get the year component for car reg
+    const randomChars = generateRandomCharacters() //generate random characters for car reg
 
     if (isAreaValid(area)) {
       //generate area code
       const areaCode = generateAreaCode(area)
-      const registration = `${areaCode} ${year} ${randomChars}`
-      vehicle.registration = registration
+      const registration = `${areaCode} ${year} ${randomChars}` //generate registration
+      vehicle.registration = registration //add registration to vehicle object
       addRegistration(vehicle.registrationArea)
     } else {
       //console.error(
@@ -118,13 +123,19 @@ function generateVehicleRegistration(vehicles) {
   console.log('REGISTRATIONS FROM EACH AREA:', getAllAreaRegistrations())
   console.log('FAILED REGISTRATIONS:', getFailedRegistrations())
 
-  //console.log a random reg
+  //console.log random regs
+  printRandomRegistrations()
+}
 
-  for (let i = 0; i < 100; i++) {
+function printRandomRegistrations() {
+  //prints 100 random valid registrations
+  let i = 0
+  while (i < 100) {
     let randomReg =
       vehicles[Math.floor(Math.random() * vehicles.length)].registration
 
     if (randomReg !== undefined) {
+      // some registrations are undefined as their city is not valid
       console.log(
         randomReg +
           ' : ' +
@@ -132,6 +143,7 @@ function generateVehicleRegistration(vehicles) {
           ' : ' +
           getYearFromReg(randomReg)
       )
+      i++
     }
   }
 }
