@@ -14,9 +14,9 @@ You need to author code which performs the following functions:
 
 # How to solve
 
-- First 2 characters generated based on the city \
+- First 2 characters generated based on the city
 
-- The second 2 characters generated based on the year \
+- The second 2 characters generated based on the year
 
 - Last 3 characters are randomly generated (avoiding invalid characters)
 
