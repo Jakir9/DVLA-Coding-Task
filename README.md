@@ -1,6 +1,6 @@
 # Car Registration Generator (post September 2001 Cars)
 
-## Problem
+## Problem/Task Description
 
 You need to author code which performs the following functions:
 
@@ -32,7 +32,7 @@ keep a track of the quantity of numberplates generated (in total and per area)
 
 # Assumptions
 
-The Vin number is tied to a unique vehicle reg, therefore no 2 vehicles are allowed to have the same registration
+The VIN number is tied to a unique vehicle reg, therefore no 2 vehicles are allowed to have the same registration number.
 
 # City registration area:
 
@@ -42,7 +42,7 @@ Cardiff | C | L ...Z| CM
 Birmingham | B | A B C | BB
 
 - Assumption:
-  Only the cities above will have a valid registration created, as this fits the rule in this specification.
+  Only vehicles from the cities above will have a valid registration created.
 
 # Age Identifier:
 
