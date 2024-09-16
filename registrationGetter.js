@@ -71,6 +71,91 @@ function getRegistrationArea(registration) {
   return 'Invalid area code'
 }
 
+function getVehicleInfo(vin, vehicleArray) {
+  //input vin  and array containing vehicle objects
+  // vin is a string
+  if (vehicleArray.length === 0) {
+    return 'error: registrations have not been generated yet'
+  } else {
+    for (let i = 0; i < vehicleArray.length; i++) {
+      if (vehicleArray[i].vin === vin) {
+        return vehicleArray[i]
+      }
+    }
+    return 'Vehicle not found'
+  }
+}
+
+function getVehicleInfoFromReg(reg, vehicleArray) {
+  //input registration and array containing vehicle objects
+  // reg is a string
+  if (vehicleArray.length === 0) {
+    return 'error: registrations have not been generated yet'
+  } else {
+    for (let i = 0; i < vehicleArray.length; i++) {
+      if (vehicleArray[i].registration === reg) {
+        return vehicleArray[i]
+      }
+    }
+    return 'Vehicle not found'
+  }
+}
+
+// Dummy array with vehicle objects
+let dummyArray = [
+  {
+    vin: '432198765',
+    make: 'Toyota',
+    colour: 'Red',
+    dateOfManufacture: '24/02/2010',
+    registrationArea: 'Swansea',
+    registration: 'CA 10 ABC',
+  },
+  {
+    vin: '987654321',
+    make: 'Honda',
+    colour: 'Blue',
+    dateOfManufacture: '15/11/2019',
+    registrationArea: 'Cardiff',
+    registration: 'CZ 69 ABC',
+  },
+  {
+    vin: '567891234',
+    make: 'Ford',
+    colour: 'Black',
+    dateOfManufacture: '10/03/2021',
+    registrationArea: 'Birmingham',
+    registration: 'BA 21 ABC',
+  },
+  {
+    vin: '123456789',
+    make: 'Nissan',
+    colour: 'White',
+    dateOfManufacture: '05/08/2018',
+    registrationArea: 'Birmingham',
+  },
+]
+
+// Test the getVehicleInfo function with a valid VIN
+console.log(getVehicleInfo('123456789', dummyArray))
+// Output: { vin: '123456789', make: 'Nissan', colour: 'White', dateOfManufacture: '05/08/2018', registrationArea: 'Birmingham' }
+
+// Test the getVehicleInfo function with an invalid VIN
+console.log(getVehicleInfo('111111111', dummyArray))
+// Output: Vehicle not found
+
+// Test with an empty array
+console.log(getVehicleInfo('123456789', []))
+// Output: error: registrations have not been generated yet
+
+//Testing VehicleInfoFromReg function
+
+console.log(getVehicleInfoFromReg('CA 10 ABC', dummyArray))
+// Output: { vin: '432198765', make: 'Toyota', colour: 'Red', dateOfManufacture: '24/02/2010', registrationArea: 'Swansea', registration: 'CA 10 ABC' }
+
+console.log(getVehicleInfoFromReg('CZ 69 ABC', dummyArray))
+// Output: { vin: '987654321', make: 'Honda', colour: 'Blue', dateOfManufacture: '15/11/2019', registrationArea: 'Cardiff', registration: 'CZ 69 ABC' }
+
 export {
   getSuccessfulRegistrations,
   getAreaRegistrations,
