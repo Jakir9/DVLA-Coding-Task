@@ -50,8 +50,10 @@ The age identifier is determined from a vehicle’s date of manufacture.
 
 ## Date range Rule Example
 
-March - Aug Year without century 01-05-2024 = 24
-Sep - Feb Year without century + 50 01-09-2024 = 74
+March - Aug Year without century
+01-05-2024 = 24
+Sep - Feb Year without century + 50 
+01-09-2024 = 74
 
 # Letters:
 
